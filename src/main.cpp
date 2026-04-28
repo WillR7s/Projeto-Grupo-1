@@ -7,7 +7,7 @@ Versão: 1.0
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "WiFiManeger.h"
+#include "WiFiManager.h"
 void conectarWifi();
 void garantir_Wifi_Conectado();
 void setup() 

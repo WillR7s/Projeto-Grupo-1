@@ -6,4 +6,5 @@ void conectarWifi();
 void garantir_Wifi_Conectado();
 
 bool wifi_esta_conectado();
+
 #endif

@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include "WiFiManeger.h"
+#include "WiFiManager.h"
 void conectarWifi()
 {
   Serial.println();
