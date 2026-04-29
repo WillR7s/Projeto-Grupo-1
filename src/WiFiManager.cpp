@@ -3,47 +3,49 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include "WiFiManager.h"
+#include "DebugManager.h"
 void conectarWifi()
 {
-  Serial.println();
-  Serial.println("===============================");
-  Serial.println("Iniciando uma conexão Wifi.....");
-  Serial.println("===============================");
+  debug_info_sem_linha("\n");
+  debug_info("===============================");
+  debug_info("Iniciando uma conexão Wifi.....");
+  debug_info("===============================");
   //Configura o ESP32 como station, ou seja ele vai se conectar a um roteador existente
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_SENHA);
-  Serial.print("Conectando");
+  debug_info_sem_linha("Conectando");
   int tentativas = 0;
   const int max_tentativas = 30;
   while(WiFi.status() !=WL_CONNECTED && tentativas < max_tentativas)
   {
-    Serial.print(".");
+    debug_info_sem_linha(".");
     delay(500);
     tentativas++;
   }
-  Serial.println();
+  debug_info_sem_linha("\n");
   if(WiFi.status() == WL_CONNECTED)
   {
-    Serial.println("Wifi conectado com sucesso!");
-    Serial.print("Endereço Ip: ");
-    Serial.print(WiFi.localIP());
+    debug_info("Wifi conectado com sucesso!");
+    debug_info_sem_linha("[INFO] Endereço Ip: ");
+    debug_info_sem_linha(String(WiFi.localIP()) );
+    debug_info_sem_linha("\n");
   }
   else
   {
-    Serial.println("Falha na conexão");
-    Serial.println("Verifique o SSID, a senha e o sinal da rede.");
+    debug_erro("Falha na conexão");
+    debug_erro("Verifique o SSID, a senha e o sinal da rede.");
   }
 }
 void garantir_Wifi_Conectado()
 {
   if(WiFi.status() != WL_CONNECTED)
   {
-    Serial.println("Wifi desconectado, Tentando reconectar....");
+    debug_info("Wifi desconectado, Tentando reconectar....");
     conectarWifi();
   }
   if(WiFi.status() != WL_CONNECTED)
   {
-    Serial.println("Não foi possivel se conectar");
+    debug_erro("Não foi possivel se conectar");
   }
 }
 bool wifi_esta_conectado()
