@@ -1,23 +1,33 @@
 /*Nome: Gael
 Projeto: Wifi no ESP
 Descrição: Integrar Wifi no ESP32
-Data: 16/04
-Versão: 1.0
+Data: 30/04
+Versão: 2.0
 */
 #include <Arduino.h>
-#include <WiFi.h>
-#include <WiFiClientSecure.h>
+
 #include "WiFiManager.h"
-void conectarWifi();
-void garantir_Wifi_Conectado();
+#include "MqttManager.h"
+#include "DebugManager.h"
+
+void tratar_mensagem_recebida(const char * topico, const String& mensagem);
 void setup() 
 {
-  WiFi.mode(WIFI_STA);
-  Serial.begin(9600);
+  configurar_debug();
+  Serial.print("aaaaaa");
   conectarWifi();
+  configurar_MQTT();
+  registrar_Call_back_Mensagem(tratar_mensagem_recebida);
+  conectar_MQTT();
 }
 
 void loop() 
 {
  garantir_Wifi_Conectado();
+ garantir_MQTT_conectado();
+ loop_MQTT();
+}
+void tratar_mensagem_recebida(const char * topico, const String& mensagem)
+{
+
 }

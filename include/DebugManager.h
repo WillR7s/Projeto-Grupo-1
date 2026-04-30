@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #define DEBUG_NENHUM 0
 #define DEBUG_ERRO 1
-#define DEBUG_TUDO 3
+#define DEBUG_TUDO 2
 
 void configurar_debug();
 void debug_erro(const String& mensagem);
