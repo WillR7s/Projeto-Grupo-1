@@ -18,8 +18,8 @@ const char* MQTT_CLIENT_ID = "esp32_Gael_De_Rousset";
 const char* MQTT_USUARIO = "";
 const char* MQTT_SENHA = "";
 const char* MQTT_CERTIFICADO_CA = "";
-const char* TOPICOS_PUBLICAR[] = {"senai134-g1/esp32/status", "senai134-g1/esp32/log", "senai134-g1/esp32/coloca_oque_quiser"};
-const char* TOPICOS_RECEBER[] = {"senai134-g1/esp32/comando", "senai134-g1/esp32/config", "senai134-g1/esp32/coloca_oque_quiser"};
+const char* TOPICOS_PUBLICAR[] = {"senai_gael_testar_led", "senai134-g1/esp32/log", "senai134-g1/esp32/coloca_oque_quiser"};
+const char* TOPICOS_RECEBER[] = {"senai_gael_testar_led", "senai134-g1/esp32/config", "senai134-g1/esp32/coloca_oque_quiser"};
 
 const bool MQTT_TLS = false;
 const bool USAR_AWS_IOT = false;
