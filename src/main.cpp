@@ -16,17 +16,19 @@ Versão: 3.0
 const int Pino_led = 48;
 const int Quantidade_leds = 1;
 const char TOPICO_LED_RGB[] = "senai_gael_testar_led";
+const int Pino_lampada = 2;
 
-//Instancias
+// Instancias
 Adafruit_NeoPixel led_RGB(Quantidade_leds, Pino_led, NEO_GBR + NEO_KHZ800);
-
-//Prototipagens
+// Prototipagens
+void lampada();
 void configurar_led_rgb();
-void tratar_mensagem_recebida(const char * topico, const String& mensagem);
+void tratar_mensagem_recebida(const char *topico, const String &mensagem);
 void alterar_cor_do_led_rgb(int vermelho, int verde, int azul);
-void tratar_JSON_Comando(const String& mensagem);
-void setup() 
+void tratar_JSON_Comando(const String &mensagem);
+void setup()
 {
+  pinMode(Pino_lampada, OUTPUT);
   configurar_debug();
   conectarWifi();
   configurar_MQTT();
@@ -35,19 +37,20 @@ void setup()
   configurar_led_rgb();
 }
 
-void loop() 
+void loop()
 {
- garantir_Wifi_Conectado();
- garantir_MQTT_conectado();
- loop_MQTT();
+ 
+  garantir_Wifi_Conectado();
+  garantir_MQTT_conectado();
+  loop_MQTT();
 }
-void tratar_mensagem_recebida(const char * topico, const String& mensagem)
+void tratar_mensagem_recebida(const char *topico, const String &mensagem)
 {
   debug_info("======================================");
   debug_info("Mensagem recebida na aplicação");
   debug_info("======================================");
 
-  if(topico ==nullptr)
+  if (topico == nullptr)
   {
     debug_erro("Topico MQTT invalido");
     return;
@@ -56,7 +59,7 @@ void tratar_mensagem_recebida(const char * topico, const String& mensagem)
   debug_info("Topico: " + String(topico));
   debug_info("Mensagem: " + mensagem);
 
-  if(strcmp(topico, TOPICO_LED_RGB) == 0)
+  if (strcmp(topico, TOPICO_LED_RGB) == 0)
   {
     tratar_JSON_Comando(mensagem);
     return;
@@ -67,6 +70,7 @@ void tratar_mensagem_recebida(const char * topico, const String& mensagem)
 
 void configurar_led_rgb()
 {
+
   led_RGB.begin();
   led_RGB.setBrightness(80);
   led_RGB.clear();
@@ -88,36 +92,42 @@ void alterar_cor_do_led_rgb(int vermelho, int verde, int azul)
   debug_info("R:" + String(vermelho));
   debug_info("G:" + String(verde));
   debug_info("B:" + String(azul));
+}
 
-} 
-
-void tratar_JSON_Comando(const String& mensagem)
+void tratar_JSON_Comando(const String &mensagem)
 {
   JsonDocument doc;
   DeserializationError erro = deserializeJson(doc, mensagem);
 
-  if(erro)
+  if (erro)
   {
     debug_erro("Erro ao interpretar json");
     debug_erro(erro.c_str());
     return;
   }
 
-  if(!doc["led"].is<JsonObject>()) debug_info("Não encontrado o comando para o LED RGB");
-  
+  if (!(doc["led"].is<JsonObject>() || doc["lampada"].is<JsonObject>()))
+  {
+
+    debug_info("Não encontrado o comando para o LED RGB ou para a lampada");
+
+    return;
+  }
   else
   {
-    if(doc["led"]["R"].is<int>()|doc["led"]["G"].is<int>()|doc["led"]["B"].is<int>()) debug_erro("JSON invalido. Use led.R, led.G e led.B");
+    if (!(doc["led"]["R"].is<int>() || !doc["led"]["G"].is<int>() || !doc["led"]["B"].is<int>() ||!doc["lampada"].is<bool>() ))
+    {
+      debug_erro("JSON invalido. Use led.R, led.G e led.B");
+      return;
+    }
     else
     {
-     int vermelho = doc["led"]["R"].is<int>();
-     int verde = doc["led"]["G"].is<int>();
-     int azul = doc["led"]["B"].is<int>();
-     alterar_cor_do_led_rgb(vermelho, verde, azul);
+      int vermelho = doc["led"]["R"].as<int>();
+      int verde = doc["led"]["G"].as<int>();
+      int azul = doc["led"]["B"].as<int>();
+      alterar_cor_do_led_rgb(vermelho, verde, azul);
+      bool trocar_estado = doc["lampada"].as<bool>();
+      digitalWrite(Pino_lampada, trocar_estado);
     }
-    
-     
-    
   }
 }
-  

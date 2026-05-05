@@ -27,7 +27,7 @@ void conectarWifi()
   {
     debug_info("Wifi conectado com sucesso!");
     debug_info_sem_linha("[INFO] Endereço Ip: ");
-    debug_info_sem_linha(String(WiFi.localIP()) );
+    debug_info_sem_linha(WiFi.localIP().toString());
     debug_info_sem_linha("\n");
   }
   else
