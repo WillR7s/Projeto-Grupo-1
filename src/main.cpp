@@ -119,37 +119,36 @@ void tratarJsonTopico(const String &mensagem)
 		return;
 	}
 
-	if (!doc["temperatura"].is<JsonObject>() || doc["estadoLampada"].is<JsonObject>())
+	bool temTemperatura = doc["temperatura"].is<JsonObject>();
+	bool temLampada = doc["estadoLampada"].is<JsonObject>();
+
+	if (!temTemperatura && !temLampada)
 	{
-		debugErro("Não encontrado o comando para a temperatura ou o comando para o estado da Lampada");
+		debugErro("JSON precisa conter ao mesmo 'temperatura' ou 'estadoLampada'");
 		return;
 	}
-	else
+
+	if (temTemperatura)
 	{
-		if (!(doc["temperatura"]["valor"].is<float>() || doc["temperatura"]["exibirEmCelsius"].is<bool>() || doc["estadoLampada"].is<bool>()))
+		if (!doc["temperatura"]["valor"].is<float>())
 		{
-			debugErro("Valores de temperatura ou do estado da lampada não encontrados");
+			debugErro("Temperatura precisa do campo 'valor' (float, em Celcius)");
 			return;
 		}
-		else
-		{
-			float valor = doc["temperatura"]["valor"].as<float>();
-			float exibirEmCelsius = doc["temperatura"]["exibirEmCelsius"].as<float>();
-			bool estadoLampada = doc["estadoLampada"].as<bool>();
-      int valorTemperaturaCelsius = 0;
-       String unidadeDeMedida = "";
 
-      digitalWrite(pinoLampada, estadoLampada);
-      if(exibirEmCelsius)
-      {
-        valorTemperaturaCelsius = valor;
-        unidadeDeMedida = "C";
-      }
-      else
-      {
-        valorTemperaturaCelsius = (valor - 32) * (5/9);
-        unidadeDeMedida = "F";
-      }
-		}
+		float valorCelsius = doc["temperatura"]["valor"].as<float>();
+
+		bool exibirEmCelsius = doc["temperatura"]["exibirEmCelsius"].is<bool>() ? doc["temperatura"]["exibirEmCelsius"].as<bool>() : true;
+
+		debugInfo("Temperatura: " + String(valorCelsius) + " C");
+
+		// TODO Informar exibirEmCelsius para o LCD.
+		// TODO Informar cor correta para ser exibida no RGB.
+	}
+
+	if (temLampada)
+	{
+		bool estadoLampada = doc["estadoLampada"].as<bool>();
+		alterarEstadoLampada(estadoLampada);
 	}
 }
