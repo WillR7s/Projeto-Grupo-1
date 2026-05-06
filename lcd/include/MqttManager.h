@@ -3,6 +3,14 @@
 
 #include <Arduino.h>
 
+enum TopicoPublicar {
+    TOPICO_LOG = 0,
+};
+
+enum TopicoReceber {
+    TOPICO_DISPLAY = 0,
+};
+
 void configurarMQTT();
 void conectarMQTT();
 void garantirMQTTconectado();

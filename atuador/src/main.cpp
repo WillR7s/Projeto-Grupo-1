@@ -1,9 +1,3 @@
-/*Nome: Gael
-Projeto: Wifi no ESP
-Descrição: Integrar Wifi no ESP32
-Data: 04/05
-Versão: 3.0
-*/
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
@@ -13,9 +7,7 @@ Versão: 3.0
 #include "DebugManager.h"
 #include "rgb.h"
 
-const int PINO_LED_RGB = 48;
 const int pinoLampada = 2;
-const int QTDS_LEDS = 1;
 const char TOPICO_COMANDO[] = "senai134-g1/esp32/comando";
 
 void tratarMensagemRecebida(const char *topico, const String &mensagem);
@@ -113,9 +105,18 @@ void tratarJsonTopico(const String &mensagem)
 
 		debugInfo("Temperatura: " + String(valorCelsius) + " C");
 
-		aplicarCorPorTemperatura(valorCelsius);
 
-		// TODO Informar exibirEmCelsius para o LCD.
+		// TODO falta enviar mais valores
+
+		aplicarCorPorTemperatura(valorCelsius);
+		JsonDocument respostaDoc;
+		respostaDoc["temperatura"] = valorCelsius;
+		respostaDoc["unidade"] = exibirEmCelsius ? "C" : "F";
+
+		String mensagemJson;
+		serializeJson(respostaDoc, mensagemJson);
+
+		publicarMensagemNoTopico(TOPICO_DISPLAY, mensagemJson.c_str());
 	}
 
 	if (temLampada)

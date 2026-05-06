@@ -5,8 +5,8 @@
 #include "DebugManager.h"
 
 //*===constantes===
-extern const int PINO_LED_RGB;
-extern const int QTDS_LEDS;
+const int PINO_LED_RGB = 48;
+const int QTDS_LEDS = 1;
 
 //*=====estaticas=====
 static int corAtualR = 0;

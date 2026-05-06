@@ -175,7 +175,7 @@ void conectarMQTT()
                 }
             }
 
-            publicarMensagemNoTopico(0, "ESP32 conectado ao MQTT");
+            publicarMensagemNoTopico(TOPICO_LOG, "ESP32-Atuador conectado ao MQTT");
         }
         else
         {
