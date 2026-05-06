@@ -11,20 +11,16 @@ Versão: 3.0
 #include "WiFiManager.h"
 #include "MqttManager.h"
 #include "DebugManager.h"
+#include "rgb.h"
 
-const int PinoLedRGB = 48;
+const int pinoLedRGB = 48;
 const int pinoLampada = 2;
-const int QntLeds = 1;
+const int qntsLEDs = 1;
 const char TOPICO_COMANDO[] = "senai134-g1/esp32/comando";
 
-Adafruit_NeoPixel ledRGB(QntLeds, PinoLedRGB, NEO_GRB + NEO_KHZ800);
-
 void tratarMensagemRecebida(const char *topico, const String &mensagem);
-void alterarLedRGB(int red, int green, int blue, int brightness = 30);
-void configurarLedRGB();
 void configurarLampada();
 void tratarJsonTopico(const String &mensagem);
-void modosLedRGB(int ledMode);
 void alterarEstadoLampada(bool estado);
 
 void setup()
@@ -69,37 +65,11 @@ void tratarMensagemRecebida(const char *topico, const String &mensagem)
 	debugErro("Tópico não tratado: " + String(topico));
 }
 
-void configurarLedRGB()
-{
-	ledRGB.begin();
-	ledRGB.setBrightness(20);
-	ledRGB.clear();
-	ledRGB.show();
-
-	debugInfo("LED RGB configurado no pino " + String(PinoLedRGB));
-}
-
 void configurarLampada()
 {
 	pinMode(pinoLampada, OUTPUT);
 	
 	debugInfo("Lampada configurado no pino " + String(pinoLampada));
-}
-
-void alterarLedRGB(int red, int green, int blue, int brightness)
-{
-	ledRGB.clear();
-
-	ledRGB.setBrightness(brightness);
-
-	red = constrain(red, 0, 255);
-	green = constrain(green, 0, 255);
-	blue = constrain(blue, 0, 255);
-
-	ledRGB.setPixelColor(0, ledRGB.Color(red, green, blue));
-	ledRGB.show();
-
-	debugInfo("Cor aplicada: (R: " + String(red) + ", G: " + String(green) + ", B: " + String(blue) + ")");
 }
 
 void alterarEstadoLampada(bool estado)
@@ -141,7 +111,7 @@ void tratarJsonTopico(const String &mensagem)
 
 			int estado = doc["lampada"].as<bool>();
 
-			alterarLedRGB(red, green, blue, brightness);
+			alterarCorLedRGB(red, green, blue);
 			alterarEstadoLampada(estado);
 		}
 	}
