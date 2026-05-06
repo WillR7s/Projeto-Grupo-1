@@ -59,7 +59,7 @@ const char* TOPICOS_PUBLICAR[] = {
     "senai134-g1/esp32/resposta",
 };
 
-const int TOTAL_TOPICOS_PUBLICAR = 3;
+
 
 const char* TOPICOS_RECEBER[] = {
     "senai134-g1/esp32/comando",

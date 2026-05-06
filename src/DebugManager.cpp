@@ -8,8 +8,8 @@ void configurarDebug()
 {
     Serial.begin(9600);
     delay(1000);
-    pinMode(PINO_DEBUG, INPUT_PULLUP);
-    if (digitalRead(PINO_DEBUG) == LOW)
+    pinMode(PINO_HABILITA_DEBUG_COMPLETO, INPUT_PULLUP);
+    if (digitalRead(PINO_HABILITA_DEBUG_COMPLETO) == LOW)
         nivelDebugAtual = DEBUG_TUDO;
     else
         nivelDebugAtual = DEBUG_NIVEL_INICIAL;
