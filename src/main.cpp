@@ -119,30 +119,37 @@ void tratarJsonTopico(const String &mensagem)
 		return;
 	}
 
-	if (!doc["led"].is<JsonObject>() || doc["lampada"].is<JsonObject>())
+	if (!doc["temperatura"].is<JsonObject>() || doc["estadoLampada"].is<JsonObject>())
 	{
-		debugErro("Não encontrado o comando para o LED RGB ou o comando para Lampada");
+		debugErro("Não encontrado o comando para a temperatura ou o comando para o estado da Lampada");
 		return;
 	}
 	else
 	{
-		if (!(doc["led"]["color"]["r"].is<int>() || doc["led"]["color"]["g"].is<int>() || doc["led"]["color"]["b"].is<int>() || doc["lampada"].is<bool>()))
+		if (!(doc["temperatura"]["valor"].is<float>() || doc["temperatura"]["exibirEmCelsius"].is<bool>() || doc["estadoLampada"].is<bool>()))
 		{
-			debugErro("Valores RGB não encontrados");
+			debugErro("Valores de temperatura ou do estado da lampada não encontrados");
 			return;
 		}
 		else
 		{
-			int red = doc["led"]["color"]["r"].as<int>();
-			int green = doc["led"]["color"]["g"].as<int>();
-			int blue = doc["led"]["color"]["b"].as<int>();
+			float valor = doc["temperatura"]["valor"].as<float>();
+			float exibirEmCelsius = doc["temperatura"]["exibirEmCelsius"].as<float>();
+			bool estadoLampada = doc["estadoLampada"].as<bool>();
+      int valorTemperaturaCelsius = 0;
+       String unidadeDeMedida = "";
 
-			int brightness = doc["led"]["brightness"].is<int>() ? doc["led"]["brightness"].as<int>() : 30;
-
-			int estado = doc["lampada"].as<bool>();
-
-			alterarLedRGB(red, green, blue, brightness);
-			alterarEstadoLampada(estado);
+      digitalWrite(pinoLampada, estadoLampada);
+      if(exibirEmCelsius)
+      {
+        valorTemperaturaCelsius = valor;
+        unidadeDeMedida = "C";
+      }
+      else
+      {
+        valorTemperaturaCelsius = (valor - 32) * (5/9);
+        unidadeDeMedida = "F";
+      }
 		}
 	}
 }
