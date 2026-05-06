@@ -117,7 +117,7 @@ void tratar_JSON_Comando(const String &mensagem)
   {
     if (!(doc["led"]["R"].is<int>() || !doc["led"]["G"].is<int>() || !doc["led"]["B"].is<int>() ||!doc["lampada"].is<bool>() ))
     {
-      debug_erro("JSON invalido. Use led.R, led.G e led.B");
+      debug_erro("JSON invalido. Use led.R, led.G e led.B ou lampada");
       return;
     }
     else
