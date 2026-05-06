@@ -13,9 +13,9 @@ Versão: 3.0
 #include "DebugManager.h"
 #include "rgb.h"
 
-const int pinoLedRGB = 48;
+const int PINO_LED_RGB = 48;
 const int pinoLampada = 2;
-const int qntsLEDs = 1;
+const int QTDS_LEDS = 1;
 const char TOPICO_COMANDO[] = "senai134-g1/esp32/comando";
 
 void tratarMensagemRecebida(const char *topico, const String &mensagem);
@@ -39,6 +39,7 @@ void loop()
 	garantirWiFiConectado();
 	garantirMQTTconectado();
 	loopMQTT();
+	atualizarLedRGB();
 }
 
 void tratarMensagemRecebida(const char *topico, const String &mensagem)
@@ -89,30 +90,37 @@ void tratarJsonTopico(const String &mensagem)
 		return;
 	}
 
-	if (!doc["led"].is<JsonObject>() || doc["lampada"].is<JsonObject>())
+	bool temTemperatura = doc["temperatura"].is<JsonObject>();
+	bool temLampada = doc["estadoLampada"].is<bool>();
+
+	if (!temTemperatura && !temLampada)
 	{
-		debugErro("Não encontrado o comando para o LED RGB ou o comando para Lampada");
+		debugErro("JSON precisa conter ao menos 'temperatura' ou 'estadoLampada'");
 		return;
 	}
-	else
+
+	if (temTemperatura)
 	{
-		if (!(doc["led"]["color"]["r"].is<int>() || doc["led"]["color"]["g"].is<int>() || doc["led"]["color"]["b"].is<int>() || doc["lampada"].is<bool>()))
+		if (!doc["temperatura"]["valor"].is<float>())
 		{
-			debugErro("Valores RGB não encontrados");
+			debugErro("Temperatura precisa do campo 'valor' (float, em Celsius)");
 			return;
 		}
-		else
-		{
-			int red = doc["led"]["color"]["r"].as<int>();
-			int green = doc["led"]["color"]["g"].as<int>();
-			int blue = doc["led"]["color"]["b"].as<int>();
 
-			int brightness = doc["led"]["brightness"].is<int>() ? doc["led"]["brightness"].as<int>() : 30;
+		float valorCelsius = doc["temperatura"]["valor"].as<float>();
 
-			int estado = doc["lampada"].as<bool>();
+		bool exibirEmCelsius = doc["temperatura"]["exibirEmCelsius"].is<bool>() ? doc["temperatura"]["exibirEmCelsius"].as<bool>() : true;
 
-			alterarCorLedRGB(red, green, blue);
-			alterarEstadoLampada(estado);
-		}
+		debugInfo("Temperatura: " + String(valorCelsius) + " C");
+
+		aplicarCorPorTemperatura(valorCelsius);
+
+		// TODO Informar exibirEmCelsius para o LCD.
+	}
+
+	if (temLampada)
+	{
+		bool estadoLampada = doc["estadoLampada"].as<bool>();
+		alterarEstadoLampada(estadoLampada);
 	}
 }

@@ -5,11 +5,24 @@
 #include "DebugManager.h"
 
 //*===constantes===
-extern const int pinoLedRGB;
-extern const int qntsLEDs;
+extern const int PINO_LED_RGB;
+extern const int QTDS_LEDS;
+
+//*=====estaticas=====
+static int corAtualR = 0;
+static int corAtualG = 0;
+static int corAtualB = 0;
+
+static int corAlvoR = 255;
+static int corAlvoG = 255;
+static int corAlvoB = 255;
+
+static ulong ultimoUpdate = 0;
+const ulong INTERVALO_MS = 20;
+const int VALOR_DIFERENCA_RGB = 5;
 
 //*===instancias===
-Adafruit_NeoPixel ledRGB(qntsLEDs, pinoLedRGB, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel ledRGB(QTDS_LEDS, PINO_LED_RGB, NEO_GRB + NEO_KHZ800);
 
 void configurarLedRGB()
 {
@@ -18,7 +31,7 @@ void configurarLedRGB()
     ledRGB.clear();
     ledRGB.show();
 
-    debugInfo("LED RGB configurado no pino " + String(pinoLedRGB));
+    debugInfo("LED RGB configurado no pino " + String(PINO_LED_RGB));
 }
 
 void alterarCorLedRGB(int red, int green, int blue)
@@ -36,20 +49,39 @@ void alterarCorLedRGB(int red, int green, int blue)
 
 void aplicarCorPorTemperatura(float celsius)
 {
-    if (celsius > 100)
-        alterarCorLedRGB(255, 0, 0);
-    else if (celsius > 90)
-        alterarCorLedRGB(255, 166, 0);
-    else if (celsius > 85)
-        alterarCorLedRGB(255, 255, 0);
-    else if (celsius > 60)
-        alterarCorLedRGB(0, 255, 0);
-    else if (celsius > 50)
-        alterarCorLedRGB(0, 255, 187);
-    else if (celsius > 40)
-        alterarCorLedRGB(0, 132, 255);
-    else
-        alterarCorLedRGB(0, 0, 255);
+    celsius = constrain(celsius, 40.0f, 100.0f);
 
-    debugInfo("Temperatura aplicada ao LED: " + String(celsius) + " C");
+    corAlvoR = map(celsius, 40, 100, 0, 255);
+    corAlvoG = 255 - abs((int)map(celsius, 40, 100, -255, 255));
+    corAlvoB = map(celsius, 40, 100, 255, 0);
+
+    debugInfo("Novo alvo do LED: (R: " + String(corAlvoR) + ", G: " + String(corAlvoG) + ", B: " + String(corAlvoB) + ")");
+}
+
+void atualizarLedRGB()
+{
+    if (corAtualR == corAlvoR && corAtualG == corAlvoG && corAtualB == corAlvoB)
+        return;
+
+    if (millis() - ultimoUpdate < INTERVALO_MS)
+        return;
+
+    ultimoUpdate = millis();
+
+    if (corAtualR < corAlvoR)
+        corAtualR = min(corAtualR + VALOR_DIFERENCA_RGB, corAlvoR);
+    else if (corAtualR > corAlvoR)
+        corAtualR = max(corAtualR - VALOR_DIFERENCA_RGB, corAlvoR);
+
+    if (corAtualG < corAlvoG)
+        corAtualG = min(corAtualG + VALOR_DIFERENCA_RGB, corAlvoG);
+    else if (corAtualG > corAlvoG)
+        corAtualG = max(corAtualG - VALOR_DIFERENCA_RGB, corAlvoG);
+
+    if (corAtualB < corAlvoB)
+        corAtualB = min(corAtualB + VALOR_DIFERENCA_RGB, corAlvoB);
+    else if (corAtualB > corAlvoB)
+        corAtualB = max(corAtualB - VALOR_DIFERENCA_RGB, corAlvoB);
+
+    alterarCorLedRGB(corAtualR, corAtualG, corAtualB);
 }
