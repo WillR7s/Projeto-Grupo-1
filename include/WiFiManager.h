@@ -1,10 +1,9 @@
-#ifndef WiFiManeger_H
-#define WiFiManeger_H
-
+#ifndef WIFIMANAGER_H
+#define WIFIMANAGER_H
 
 void conectarWifi();
-void garantir_Wifi_Conectado();
+void garantirWiFiConectado();
 
-bool wifi_esta_conectado();
+bool wifiEstaConectado();
 
 #endif

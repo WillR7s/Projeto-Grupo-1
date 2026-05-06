@@ -18,6 +18,7 @@ const char* MQTT_BROKER = "ec06175609cb4ed38b9b4e7baf62668c.s1.eu.hivemq.cloud";
 const char* MQTT_CLIENT_ID = "esp32_Gael_De_Rousset";
 const char* MQTT_USUARIO = "Gael1";
 const char* MQTT_SENHA = "Senai@134";
+
 const char MQTT_CERTIFICADO_CA[] PROGMEM = R"EOF( 
 -----BEGIN CERTIFICATE-----
 MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw
@@ -51,8 +52,20 @@ mRGunUHBcnWEvgJBQl9nJEiU0Zsnvgc/ubhPgXRR4Xq37Z0j4r7g1SgEEzwxA57d
 emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
 -----END CERTIFICATE-----
 )EOF"; //https://letsencrypt.org/certs/isrgrootx1.pem
-const char* TOPICOS_PUBLICAR[] = {"senai_gael_testar_led", "senai134-g1/esp32/log", "senai134-g1/esp32/Lapada"};
-const char* TOPICOS_RECEBER[] = {"senai_gael_testar_led", "senai134-g1/esp32/config", "senai134-g1/esp32/Lapada"};
+
+const char* TOPICOS_PUBLICAR[] = {
+    "senai134-g1/esp32/status",
+    "senai134-g1/esp32/log",
+    "senai134-g1/esp32/resposta",
+};
+
+const int TOTAL_TOPICOS_PUBLICAR = 3;
+
+const char* TOPICOS_RECEBER[] = {
+    "senai134-g1/esp32/comando",
+    "senai134-g1/esp32/config",
+    "senai134-g1/esp32/display",
+};
 
 const bool MQTT_TLS = true;
 const bool USAR_AWS_IOT = false;
@@ -60,5 +73,3 @@ const bool USAR_AWS_IOT = false;
 const int MQTT_PORTA = 8883;
 const int TOTAL_TOPICOS_PUBLICAR = 3;
 const int TOTAL_TOPICOS_RECEBER = 3;
-
-

@@ -5,129 +5,144 @@ Data: 04/05
 Versão: 3.0
 */
 #include <Arduino.h>
-#include <arduinoJson.h>
+#include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
 
 #include "WiFiManager.h"
 #include "MqttManager.h"
 #include "DebugManager.h"
 
-// Constantes
-const int Pino_led = 48;
-const int Quantidade_leds = 1;
-const char TOPICO_LED_RGB[] = "senai_gael_testar_led";
-const int Pino_lampada = 2;
+const int PinoLedRGB = 48;
+const int pinoLampada = 2;
+const int QntLeds = 1;
+const char TOPICO_COMANDO[] = "senai134-g1/esp32/comando";
 
-// Instancias
-Adafruit_NeoPixel led_RGB(Quantidade_leds, Pino_led, NEO_GBR + NEO_KHZ800);
-// Prototipagens
-void lampada();
-void configurar_led_rgb();
-void tratar_mensagem_recebida(const char *topico, const String &mensagem);
-void alterar_cor_do_led_rgb(int vermelho, int verde, int azul);
-void tratar_JSON_Comando(const String &mensagem);
+Adafruit_NeoPixel ledRGB(QntLeds, PinoLedRGB, NEO_GRB + NEO_KHZ800);
+
+void tratarMensagemRecebida(const char *topico, const String &mensagem);
+void alterarLedRGB(int red, int green, int blue, int brightness = 30);
+void configurarLedRGB();
+void configurarLampada();
+void tratarJsonTopico(const String &mensagem);
+void modosLedRGB(int ledMode);
+void alterarEstadoLampada(bool estado);
+
 void setup()
 {
-  pinMode(Pino_lampada, OUTPUT);
-  configurar_debug();
-  conectarWifi();
-  configurar_MQTT();
-  registrar_Call_back_Mensagem(tratar_mensagem_recebida);
-  conectar_MQTT();
-  configurar_led_rgb();
+	configurarDebug();
+	conectarWifi();
+	configurarMQTT();
+	registrarCallBackMensagem(tratarMensagemRecebida);
+	conectarMQTT();
+	configurarLedRGB();
+	configurarLampada();
 }
 
 void loop()
 {
- 
-  garantir_Wifi_Conectado();
-  garantir_MQTT_conectado();
-  loop_MQTT();
-}
-void tratar_mensagem_recebida(const char *topico, const String &mensagem)
-{
-  debug_info("======================================");
-  debug_info("Mensagem recebida na aplicação");
-  debug_info("======================================");
-
-  if (topico == nullptr)
-  {
-    debug_erro("Topico MQTT invalido");
-    return;
-  }
-
-  debug_info("Topico: " + String(topico));
-  debug_info("Mensagem: " + mensagem);
-
-  if (strcmp(topico, TOPICO_LED_RGB) == 0)
-  {
-    tratar_JSON_Comando(mensagem);
-    return;
-  }
-
-  debug_erro("Tópicos não tratados: " + String(topico));
+	garantirWiFiConectado();
+	garantirMQTTconectado();
+	loopMQTT();
 }
 
-void configurar_led_rgb()
+void tratarMensagemRecebida(const char *topico, const String &mensagem)
 {
+	debugInfoSemLinha("==============================\n");
+	debugInfoSemLinha("Mensagem recebida na aplicação\n");
+	debugInfoSemLinha("==============================\n");
 
-  led_RGB.begin();
-  led_RGB.setBrightness(80);
-  led_RGB.clear();
-  led_RGB.show();
+	if (topico == nullptr)
+	{
+		debugErro("Tópico MQTT inválido.");
+		return;
+	}
 
-  debug_info("Led RGB configurado no pino" + String(Pino_led));
+	debugInfo("Tópico: " + String(topico));
+	debugInfo("Mensagem: " + mensagem);
+
+	if (strcmp(topico, TOPICO_COMANDO) == 0)
+	{
+		tratarJsonTopico(mensagem);
+		return;
+	}
+
+	debugErro("Tópico não tratado: " + String(topico));
 }
 
-void alterar_cor_do_led_rgb(int vermelho, int verde, int azul)
+void configurarLedRGB()
 {
-  vermelho = constrain(vermelho, 0, 255);
-  verde = constrain(verde, 0, 255);
-  azul = constrain(azul, 0, 255);
+	ledRGB.begin();
+	ledRGB.setBrightness(20);
+	ledRGB.clear();
+	ledRGB.show();
 
-  led_RGB.setPixelColor(0, led_RGB.Color(vermelho, verde, azul));
-  led_RGB.show();
-
-  debug_info("Cor aplicada no led RGB");
-  debug_info("R:" + String(vermelho));
-  debug_info("G:" + String(verde));
-  debug_info("B:" + String(azul));
+	debugInfo("LED RGB configurado no pino " + String(PinoLedRGB));
 }
 
-void tratar_JSON_Comando(const String &mensagem)
+void configurarLampada()
 {
-  JsonDocument doc;
-  DeserializationError erro = deserializeJson(doc, mensagem);
+	pinMode(pinoLampada, OUTPUT);
+	
+	debugInfo("Lampada configurado no pino " + String(pinoLampada));
+}
 
-  if (erro)
-  {
-    debug_erro("Erro ao interpretar json");
-    debug_erro(erro.c_str());
-    return;
-  }
+void alterarLedRGB(int red, int green, int blue, int brightness)
+{
+	ledRGB.clear();
 
-  if (!(doc["led"].is<JsonObject>() || doc["lampada"].is<JsonObject>()))
-  {
+	ledRGB.setBrightness(brightness);
 
-    debug_info("Não encontrado o comando para o LED RGB ou para a lampada");
+	red = constrain(red, 0, 255);
+	green = constrain(green, 0, 255);
+	blue = constrain(blue, 0, 255);
 
-    return;
-  }
-  else
-  {
-    if (!(doc["led"]["R"].is<int>() || !doc["led"]["G"].is<int>() || !doc["led"]["B"].is<int>() ||!doc["lampada"].is<bool>() ))
-    {
-      debug_erro("JSON invalido. Use led.R, led.G e led.B ou lampada");
-      return;
-    }
-    else
-    {
-      int vermelho = doc["led"]["R"].as<int>();
-      int verde = doc["led"]["G"].as<int>();
-      int azul = doc["led"]["B"].as<int>();
-      alterar_cor_do_led_rgb(vermelho, verde, azul);
-      bool trocar_estado = doc["lampada"].as<bool>();
-      digitalWrite(Pino_lampada, trocar_estado);
-    }
-  }
+	ledRGB.setPixelColor(0, ledRGB.Color(red, green, blue));
+	ledRGB.show();
+
+	debugInfo("Cor aplicada: (R: " + String(red) + ", G: " + String(green) + ", B: " + String(blue) + ")");
+}
+
+void alterarEstadoLampada(bool estado)
+{
+	digitalWrite(pinoLampada, estado);
+}
+
+void tratarJsonTopico(const String &mensagem)
+{
+	JsonDocument doc;
+	DeserializationError erro = deserializeJson(doc, mensagem);
+
+	if (erro)
+	{
+		debugErro("Erro ao interpretar o JSON");
+		debugErro(erro.c_str());
+		return;
+	}
+
+	if (!doc["led"].is<JsonObject>() || doc["lampada"].is<JsonObject>())
+	{
+		debugErro("Não encontrado o comando para o LED RGB ou o comando para Lampada");
+		return;
+	}
+	else
+	{
+		if (!(doc["led"]["color"]["r"].is<int>() || doc["led"]["color"]["g"].is<int>() || doc["led"]["color"]["b"].is<int>() || doc["lampada"].is<bool>()))
+		{
+			debugErro("Valores RGB não encontrados");
+			return;
+		}
+		else
+		{
+			int red = doc["led"]["color"]["r"].as<int>();
+			int green = doc["led"]["color"]["g"].as<int>();
+			int blue = doc["led"]["color"]["b"].as<int>();
+
+			int brightness = doc["led"]["brightness"].is<int>() ? doc["led"]["brightness"].as<int>() : 30;
+
+			int estado = doc["lampada"].as<bool>();
+
+			alterarLedRGB(red, green, blue, brightness);
+			alterarEstadoLampada(estado);
+		}
+	}
 }
