@@ -6,6 +6,6 @@
 void configurarLedRGB();
 void alterarCorLedRGB(int red, int green, int blue);
 void aplicarCorPorTemperatura(float celsius);
-void atualizarLedRGB();
+void atualizarLedRGB(float celsius);
 
 #endif

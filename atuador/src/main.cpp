@@ -8,7 +8,7 @@
 #include "rgb.h"
 
 const int pinoLampada = 2;
-const char TOPICO_COMANDO[] = "senai134/g1/esp32/comando";
+const char TOPICO_RECEBER[] = "senai134/g1/esp32/comando";
 
 void tratarMensagemRecebida(const char *topico, const String &mensagem);
 void configurarLampada();
@@ -49,7 +49,7 @@ void tratarMensagemRecebida(const char *topico, const String &mensagem)
 	debugInfo("Tópico: " + String(topico));
 	debugInfo("Mensagem: " + mensagem);
 
-	if (strcmp(topico, TOPICO_COMANDO) == 0)
+	if (strcmp(topico, TOPICO_RECEBER) == 0)
 	{
 		tratarJsonTopico(mensagem);
 		return;
@@ -91,6 +91,8 @@ void tratarJsonTopico(const String &mensagem)
 		return;
 	}
 
+	JsonDocument respostaDoc;
+
 	if (temTemperatura)
 	{
 		if (!doc["temperatura"]["valor"].is<float>())
@@ -107,18 +109,27 @@ void tratarJsonTopico(const String &mensagem)
 		// TODO falta enviar mais valores
 
 		atualizarLedRGB(valorCelsius);
-		JsonDocument respostaDoc;
+		
 		respostaDoc["temperatura"] = valorCelsius;
 
+
+	}
+
+	if (temLampada)
+	{
+		bool estadoLampada = doc["estadoLampada"].as<bool>();
+		respostaDoc["estadoLampada"] = estadoLampada;
+		alterarEstadoLampada(estadoLampada);
+	}
+
+	if (!respostaDoc.isNull())
+	{
 		String mensagemJson;
 		serializeJson(respostaDoc, mensagemJson);
 
 		publicarMensagemNoTopico(TOPICO_DISPLAY, mensagemJson.c_str());
 	}
 
-	if (temLampada)
-	{
-		bool estadoLampada = doc["estadoLampada"].as<bool>();
-		alterarEstadoLampada(estadoLampada);
-	}
+	respostaDoc.clear();
+	doc.clear();
 }
