@@ -101,8 +101,6 @@ void tratarJsonTopico(const String &mensagem)
 
 		float valorCelsius = doc["temperatura"]["valor"].as<float>();
 
-		bool exibirEmCelsius = doc["temperatura"]["exibirEmCelsius"].is<bool>() ? doc["temperatura"]["exibirEmCelsius"].as<bool>() : true;
-
 		debugInfo("Temperatura: " + String(valorCelsius) + " C");
 
 
@@ -111,7 +109,6 @@ void tratarJsonTopico(const String &mensagem)
 		aplicarCorPorTemperatura(valorCelsius);
 		JsonDocument respostaDoc;
 		respostaDoc["temperatura"] = valorCelsius;
-		respostaDoc["unidade"] = exibirEmCelsius ? "C" : "F";
 
 		String mensagemJson;
 		serializeJson(respostaDoc, mensagemJson);

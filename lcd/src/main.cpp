@@ -64,12 +64,10 @@ void tratarJsonTopico(const String &mensagem)
 
 	bool temTemperatura = doc["temperatura"].is<float>();
 	bool temLampada = doc["estadoLampada"].is<bool>();
-	bool temCorRGB = doc["ledRGB"].is<JsonObject>();
-	bool temUnidade = doc["unidade"].is<String>();
 
-	if (!temTemperatura && !temLampada && !temCorRGB && !temUnidade)
+	if (!temTemperatura && !temLampada)
 	{
-		debugErro("JSON precisa conter ao menos 'temperatura' ou 'estadoLampada' ou 'ledRGB' ou 'unidade'");
+		debugErro("JSON precisa conter ao menos 'temperatura' ou 'estadoLampada'");
 		return;
 	}
 
@@ -79,11 +77,6 @@ void tratarJsonTopico(const String &mensagem)
 	}
 
 	if(temLampada)
-	{
-		// TODO aqui enviar para o LCD mostra estado da lampada
-	}
-
-	if(temCorRGB)
 	{
 		// TODO aqui enviar para o LCD mostra estado da lampada
 	}
