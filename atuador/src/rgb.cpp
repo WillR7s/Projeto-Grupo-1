@@ -46,15 +46,6 @@ void alterarCorLedRGB(int red, int green, int blue)
     debugInfo("Cor aplicada: (R: " + String(red) + ", G: " + String(green) + ", B: " + String(blue) + ")");
 }
 
-void aplicarCorPorTemperatura(float celsius)
-{
-    
-
-   
-
-    debugInfo("Novo alvo do LED: (R: " + String(corAlvoR) + ", G: " + String(corAlvoG) + ", B: " + String(corAlvoB) + ")");
-}
-
 void atualizarLedRGB(float celsius)
 {
     celsius = constrain(celsius, 40.0f, 100.0f);
