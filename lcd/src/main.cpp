@@ -103,6 +103,32 @@ void tratarJsonTopico(const String &mensagem)
 		debugErro("JSON precisa conter ao menos 'temperatura' ou 'estadoLampada'");
 		return;
 	}
+
+	if (temTemperatura)
+	{
+
+		float celsius = doc["temperatura"].as<float>();
+
+		lcd.setCursor(0, 0);
+		lcd.print("Temp: ");
+		lcd.print(celsius);
+		lcd.write(223);
+		lcd.print(" C");
+	}
+
+	if (temLampada)
+	{
+		if (doc["estadoLampada"].as<bool>())
+		{
+			lcd.setCursor(9, 1);
+			lcd.print("ON ");
+		}
+		else
+		{
+			lcd.setCursor(9, 1);
+			lcd.print("OFF");
+		}
+	}
 }
 
 void trocartela()
@@ -110,18 +136,13 @@ void trocartela()
 	lcd.clear();
 	// Temperatura Celsius
 	lcd.setCursor(0, 0);
-	lcd.print("Temp: ");
-	lcd.print(temperaturaC);
-	lcd.write(223);
-	lcd.print("C");
-	lcd.setCursor(11, 0);
+	lcd.print("Temp:");
 	lcd.setCursor(0, 1);
-	lcd.print("Lampada: on/off");
-	lcd.setCursor(0, 2);
-	lcd.print("Status: Quente");
+	lcd.print("Lampada:");
+
 	lcd.setCursor(0, 3);
-    lcd.print("Hora: ");
-    lcd.print(&timeinfo, "%H:%M:%S  ");
+	lcd.print("Hora: ");
+	lcd.print(&timeinfo, "%H:%M:%S  ");
 }
 
 void tratarHora()
@@ -139,13 +160,3 @@ void tratarHora()
 
 	lcd.print(&timeinfo, "%H:%M:%S  ");
 }
-
-/*if (temTemperatura)
-{
-	// TODO Lógica para converter e enviar para o LCD
-}
-
-if(temLampada)
-{
-	// TODO aqui enviar para o LCD mostra estado da lampada
-}*/
