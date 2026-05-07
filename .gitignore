@@ -6,3 +6,5 @@
 **/include/secrets.h
 **/src/secrets.cpp
 **/Secrets
+lcd/.gitignore
+atuador/.gitignore
