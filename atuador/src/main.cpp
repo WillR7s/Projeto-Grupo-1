@@ -82,7 +82,7 @@ void tratarJsonTopico(const String &mensagem)
 		return;
 	}
 
-	bool temTemperatura = doc["temperatura"].is<JsonObject>();
+	bool temTemperatura = doc["temperatura"].is<float>();
 	bool temLampada = doc["estadoLampada"].is<bool>();
 
 	if (!temTemperatura && !temLampada)
@@ -95,24 +95,13 @@ void tratarJsonTopico(const String &mensagem)
 
 	if (temTemperatura)
 	{
-		if (!doc["temperatura"]["valor"].is<float>())
-		{
-			debugErro("Temperatura precisa do campo 'valor' (float, em Celsius)");
-			return;
-		}
-
-		float valorCelsius = doc["temperatura"]["valor"].as<float>();
+		float valorCelsius = doc["temperatura"].as<float>();
 
 		debugInfo("Temperatura: " + String(valorCelsius) + " C");
-
-
-		// TODO falta enviar mais valores
 
 		atualizarLedRGB(valorCelsius);
 		
 		respostaDoc["temperatura"] = valorCelsius;
-
-
 	}
 
 	if (temLampada)
@@ -123,7 +112,7 @@ void tratarJsonTopico(const String &mensagem)
 	}
 
 	if (!respostaDoc.isNull())
-	{
+	{ 
 		String mensagemJson;
 		serializeJson(respostaDoc, mensagemJson);
 

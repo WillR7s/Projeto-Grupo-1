@@ -50,35 +50,35 @@ void atualizarLedRGB(float celsius)
 {
     celsius = constrain(celsius, 40.0f, 100.0f);
 
-  if(sensor > 40.0 && sensor < 52.0)
+  if(celsius >= 40.0 && celsius < 52.0)
   {
   corAtualB = 255;
   corAtualG = 0;
   corAtualR = 0;
    debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
   }
-  else if(sensor > 52 && sensor < 64)
+  else if(celsius > 52.0 && celsius < 64.0)
   {
     corAtualB = 255;
     corAtualG = 255;
     corAtualR = 0;
      debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
   }
-  else if(sensor > 64 && sensor < 72)
+  else if(celsius > 64.0 && celsius < 72.0)
   {
     corAtualB = 0;
     corAtualG = 255;
     corAtualR = 0;
      debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
   }
-  else if(sensor > 72 && sensor < 84)
+  else if(celsius > 72.0 && celsius < 84.0)
   {
     corAtualB = 0;
-    corAtualG = 255;
+    corAtualG = 100;
     corAtualR = 255;
      debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
   }
-  else if(sensor > 84 && sensor <= 100)
+  else if(celsius > 84.0 && celsius <= 100.0)
   {
     corAtualB = 0;
     corAtualG = 0;
