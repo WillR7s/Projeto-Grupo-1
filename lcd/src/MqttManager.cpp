@@ -206,6 +206,8 @@ void garantirMQTTconectado()
 
     if(!mqttEstaConectado())
     {
+        debugInfoSemLinha("MQTT Code: ");
+        debugInfoSemLinha(mqttClient.state() + "\n");
         debugErro("MQTT desconectado. Tentando reconectar...");
         conectarMQTT();
     }
