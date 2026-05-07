@@ -8,7 +8,7 @@
 #include "rgb.h"
 
 const int pinoLampada = 2;
-const char TOPICO_COMANDO[] = "senai134-g1/esp32/comando";
+const char TOPICO_COMANDO[] = "senai134/g1/esp32/comando";
 
 void tratarMensagemRecebida(const char *topico, const String &mensagem);
 void configurarLampada();
@@ -31,7 +31,7 @@ void loop()
 	garantirWiFiConectado();
 	garantirMQTTconectado();
 	loopMQTT();
-	atualizarLedRGB();
+	
 }
 
 void tratarMensagemRecebida(const char *topico, const String &mensagem)
@@ -106,7 +106,7 @@ void tratarJsonTopico(const String &mensagem)
 
 		// TODO falta enviar mais valores
 
-		aplicarCorPorTemperatura(valorCelsius);
+		atualizarLedRGB(valorCelsius);
 		JsonDocument respostaDoc;
 		respostaDoc["temperatura"] = valorCelsius;
 

@@ -13,13 +13,12 @@ static int corAtualR = 0;
 static int corAtualG = 0;
 static int corAtualB = 0;
 
-static int corAlvoR = 255;
-static int corAlvoG = 255;
-static int corAlvoB = 255;
+
 
 static ulong ultimoUpdate = 0;
 const ulong INTERVALO_MS = 20;
 const int VALOR_DIFERENCA_RGB = 5;
+float sensor = 0.0;
 
 //*===instancias===
 Adafruit_NeoPixel ledRGB(QTDS_LEDS, PINO_LED_RGB, NEO_GRB + NEO_KHZ800);
@@ -49,39 +48,52 @@ void alterarCorLedRGB(int red, int green, int blue)
 
 void aplicarCorPorTemperatura(float celsius)
 {
-    celsius = constrain(celsius, 40.0f, 100.0f);
+    
 
-    corAlvoR = map(celsius, 40, 100, 0, 255);
-    corAlvoG = 255 - abs((int)map(celsius, 40, 100, -255, 255));
-    corAlvoB = map(celsius, 40, 100, 255, 0);
+   
 
     debugInfo("Novo alvo do LED: (R: " + String(corAlvoR) + ", G: " + String(corAlvoG) + ", B: " + String(corAlvoB) + ")");
 }
 
-void atualizarLedRGB()
+void atualizarLedRGB(float celsius)
 {
-    if (corAtualR == corAlvoR && corAtualG == corAlvoG && corAtualB == corAlvoB)
-        return;
+    celsius = constrain(celsius, 40.0f, 100.0f);
 
-    if (millis() - ultimoUpdate < INTERVALO_MS)
-        return;
-
-    ultimoUpdate = millis();
-
-    if (corAtualR < corAlvoR)
-        corAtualR = min(corAtualR + VALOR_DIFERENCA_RGB, corAlvoR);
-    else if (corAtualR > corAlvoR)
-        corAtualR = max(corAtualR - VALOR_DIFERENCA_RGB, corAlvoR);
-
-    if (corAtualG < corAlvoG)
-        corAtualG = min(corAtualG + VALOR_DIFERENCA_RGB, corAlvoG);
-    else if (corAtualG > corAlvoG)
-        corAtualG = max(corAtualG - VALOR_DIFERENCA_RGB, corAlvoG);
-
-    if (corAtualB < corAlvoB)
-        corAtualB = min(corAtualB + VALOR_DIFERENCA_RGB, corAlvoB);
-    else if (corAtualB > corAlvoB)
-        corAtualB = max(corAtualB - VALOR_DIFERENCA_RGB, corAlvoB);
+  if(sensor > 40.0 && sensor < 52.0)
+  {
+  corAtualB = 255;
+  corAtualG = 0;
+  corAtualR = 0;
+   debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
+  }
+  else if(sensor > 52 && sensor < 64)
+  {
+    corAtualB = 255;
+    corAtualG = 255;
+    corAtualR = 0;
+     debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
+  }
+  else if(sensor > 64 && sensor < 72)
+  {
+    corAtualB = 0;
+    corAtualG = 255;
+    corAtualR = 0;
+     debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
+  }
+  else if(sensor > 72 && sensor < 84)
+  {
+    corAtualB = 0;
+    corAtualG = 255;
+    corAtualR = 255;
+     debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
+  }
+  else if(sensor > 84 && sensor <= 100)
+  {
+    corAtualB = 0;
+    corAtualG = 0;
+    corAtualR = 255;
+    debugInfo("Novo alvo do LED: (R: " + String(corAtualR) + ", G: " + String(corAtualG) + ", B: " + String(corAtualB) + ")");
+  }
 
     alterarCorLedRGB(corAtualR, corAtualG, corAtualB);
 }
